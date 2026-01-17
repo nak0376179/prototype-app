@@ -38,12 +38,12 @@ user_names = [
 ]
 
 # グループとユーザーの対応を作成
-group_to_users = {gid: [] for gid in group_ids}
-user_to_groups = {}
+group_to_users: dict[str, list[dict[str, str]]] = {gid: [] for gid in group_ids}
+user_to_groups: dict[str, list[str]] = {}
 
-users = []
-groups = []
-logs = []
+users: list[dict[str, dict[str, str | list]]] = []
+groups: list[dict[str, dict[str, str | list]]] = []
+logs: list[dict[str, dict[str, str | list]]] = []
 
 for email in user_emails:
     name = random.choice(user_names)

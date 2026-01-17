@@ -81,11 +81,17 @@ def _log_dynamodb_error(context: str, table_name: str, key: Any, e: ClientError)
     code = e.response.get("ResponseMetadata", {}).get("HTTPStatusCode")
     full_table_name = get_full_table_name(table_name)
     if code == 429:
-        logger.error(f"[{context}] ⚠️{code} Throttled on table '{full_table_name}' with key {key}: {e}")
+        logger.error(
+            f"[{context}] ⚠️{code} Throttled on table '{full_table_name}' with key {key}: {e}"
+        )
     elif code == 500:
-        logger.error(f"[{context}] 🚨{code} Internal Server Error on table '{full_table_name}' with key {key}: {e}")
+        logger.error(
+            f"[{context}] 🚨{code} Internal Server Error on table '{full_table_name}' with key {key}: {e}"
+        )
     else:
-        logger.error(f"[{context}] 🔥{code} Error on table={full_table_name}, key={key}: {e}")
+        logger.error(
+            f"[{context}] 🔥{code} Error on table={full_table_name}, key={key}: {e}"
+        )
 
 
 # ====================
@@ -107,7 +113,9 @@ def get_item(table_name: str, key: dict[str, Any]) -> dict[str, Any] | None:
 
         item = response.get("Item")
         if item is None:
-            logger.warning(f"[get_item] 見つかりませんでした: table={table_name}, key={key}")
+            logger.warning(
+                f"[get_item] 見つかりませんでした: table={table_name}, key={key}"
+            )
         return item
     except ClientError as e:
         _log_dynamodb_error("get_item", table_name, key, e)
@@ -130,7 +138,11 @@ def put_item(table_name: str, item: dict[str, Any]) -> None:
 
 
 def update_item(
-    table_name: str, key: dict[str, Any], update_expr: str, expr_attr_values: dict[str, Any], expr_attr_names: dict[str, str] | None = None
+    table_name: str,
+    key: dict[str, Any],
+    update_expr: str,
+    expr_attr_values: dict[str, Any],
+    expr_attr_names: dict[str, str] | None = None,
 ) -> dict[str, Any]:
     """
     指定したキーのアイテムに対して、属性を更新します。
@@ -143,7 +155,12 @@ def update_item(
     """
     table = get_table(table_name)
 
-    kwargs = {"Key": key, "UpdateExpression": update_expr, "ExpressionAttributeValues": expr_attr_values, "ReturnValues": "ALL_NEW"}
+    kwargs = {
+        "Key": key,
+        "UpdateExpression": update_expr,
+        "ExpressionAttributeValues": expr_attr_values,
+        "ReturnValues": "ALL_NEW",
+    }
     if expr_attr_names:
         kwargs["ExpressionAttributeNames"] = expr_attr_names
 
@@ -170,7 +187,9 @@ def delete_item(table_name: str, key: dict[str, Any]) -> None:
         raise
 
 
-def batch_get_items(table_name: str, keys: list[dict[str, Any]]) -> list[dict[str, Any]]:
+def batch_get_items(
+    table_name: str, keys: list[dict[str, Any]]
+) -> list[dict[str, Any]]:
     """
     複数のキーでまとめてアイテムを取得します（最大100件ずつ）。未取得キーは警告ログ表示
 
@@ -194,7 +213,9 @@ def batch_get_items(table_name: str, keys: list[dict[str, Any]]) -> list[dict[st
             found_items.extend(items)
             request_items = response.get("UnprocessedKeys", {})
 
-        found_keys = [{k: item[k] for k in keys[0].keys() if k in item} for item in found_items]
+        found_keys = [
+            {k: item[k] for k in keys[0].keys() if k in item} for item in found_items
+        ]
         missing_keys = [k for k in batch_keys if k not in found_keys]
         if missing_keys:
             logger.error(f"[batch_get_items] 🔥見つからないキー: {missing_keys}")
@@ -235,12 +256,15 @@ def query_items(
         }
     """
     table = get_table(table_name)
-    items = []
+    items: list[dict[str, Any]] = []
     total_size = 0
     last_evaluated = exclusive_start_key
 
     while True:
-        query_kwargs = {"KeyConditionExpression": key_condition_expr, "Limit": min(MAX_LIMIT, limit - len(items))}
+        query_kwargs = {
+            "KeyConditionExpression": key_condition_expr,
+            "Limit": min(MAX_LIMIT, limit - len(items)),
+        }
         if expr_attr_values:
             query_kwargs["ExpressionAttributeValues"] = expr_attr_values
         if index_name:
@@ -260,7 +284,11 @@ def query_items(
 
         chunk = response.get("Items", [])
         items.extend(chunk)
-        size_str = response.get("ResponseMetadata", {}).get("HTTPHeaders", {}).get("content-length", "0")
+        size_str = (
+            response.get("ResponseMetadata", {})
+            .get("HTTPHeaders", {})
+            .get("content-length", "0")
+        )
         try:
             total_size += int(size_str)
         except (TypeError, ValueError):
@@ -285,12 +313,12 @@ def scan_items(
     🔥特別な場合を除いて利用しないでください。
     """
     table = get_table(table_name)
-    items = []
+    items: list[dict[str, Any]] = []
     last_evaluated = exclusive_start_key
     total_size = 0
 
     while True:
-        scan_kwargs = {"Limit": min(MAX_LIMIT, limit - len(items))}
+        scan_kwargs: dict[str, Any] = {"Limit": min(MAX_LIMIT, limit - len(items))}
         if filter_expr:
             scan_kwargs["FilterExpression"] = filter_expr
         if expr_attr_values:
@@ -308,7 +336,11 @@ def scan_items(
 
         chunk = response.get("Items", [])
         items.extend(chunk)
-        size_str = response.get("ResponseMetadata", {}).get("HTTPHeaders", {}).get("content-length", "0")
+        size_str = (
+            response.get("ResponseMetadata", {})
+            .get("HTTPHeaders", {})
+            .get("content-length", "0")
+        )
         try:
             total_size += int(size_str)
         except (TypeError, ValueError):
