@@ -4,8 +4,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Amplify } from 'aws-amplify'
 import * as React from 'react'
 import * as ReactDOM from 'react-dom/client'
-import App from './App'
+import { RouterProvider, createRouter } from '@tanstack/react-router'
 import theme from './themes'
+import { routeTree } from './routeTree.gen' // 自動生成されるファイル
 
 Amplify.configure({
   Auth: {
@@ -16,6 +17,16 @@ Amplify.configure({
   }
 })
 
+// ルーターの作成
+const router = createRouter({ routeTree })
+
+// 型安全のために登録
+declare module '@tanstack/react-router' {
+  interface Register {
+    router: typeof router
+  }
+}
+
 const queryClient = new QueryClient()
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
@@ -23,7 +34,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <QueryClientProvider client={queryClient}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <App />
+        {/* App の代わりに RouterProvider を使う */}
+        <RouterProvider router={router} />
       </ThemeProvider>
     </QueryClientProvider>
   </React.StrictMode>

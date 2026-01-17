@@ -1,7 +1,7 @@
-import { ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { AppBar, Box, CssBaseline, Drawer, IconButton, List, ListItem, ListItemButton, ListItemText, Toolbar, Typography, Button } from '@mui/material'
-import MenuIcon from '@mui/icons-material/Menu'
-import { useNavigate, useLocation } from 'react-router'
+import { Menu as MenuIcon } from '@mui/icons-material'
+import { useNavigate, useLocation } from '@tanstack/react-router'
 
 const drawerWidth = 240
 
@@ -14,15 +14,15 @@ export default function Layout({ children }: LayoutProps) {
   const location = useLocation()
 
   const menuItems = [
-    { text: 'Home', path: '/auth/home' },
-    { text: 'ユーザー一覧', path: '/auth/users' },
-    { text: 'ログ一覧', path: '/auth/logs' },
-    { text: '設定', path: '/auth/settings' }
+    { text: 'Home', path: '/home' },
+    { text: 'ユーザー一覧', path: '/users' },
+    { text: 'ログ一覧', path: '/logs' },
+    { text: '設定', path: '/settings' }
   ]
 
   const handleLogout = () => {
     // 認証クリア処理など
-    navigate('/logout')
+    navigate({ to: '/logout' })
   }
 
   return (
@@ -55,7 +55,7 @@ export default function Layout({ children }: LayoutProps) {
           <List>
             {menuItems.map((item) => (
               <ListItem key={item.text} disablePadding>
-                <ListItemButton onClick={() => navigate(item.path)} selected={location.pathname === item.path}>
+                <ListItemButton onClick={() => navigate({ to: item.path as any })} selected={location.pathname === item.path}>
                   <ListItemText primary={item.text} />
                 </ListItemButton>
               </ListItem>

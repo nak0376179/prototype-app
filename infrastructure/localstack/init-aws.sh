@@ -38,18 +38,17 @@ echo "✅ S3 初期化完了"
 # DynamoDB テーブル作成ブロック
 echo "📂 DynamoDB テーブル作成中..."
 
-for f in /opt/code/localstack/dynamodb/create_tables/*.json; do
+# ディレクトリを変数に定義して確実に指定
+TABLE_DIR="/opt/code/localstack/dynamodb/create_tables"
+
+for f in "$TABLE_DIR"/*.json; do
   if [ -f "$f" ]; then
     filename=$(basename "$f")
     echo "📄 $filename を作成中..."
-    # JSON 定義ファイルを使ってテーブル作成
-    aws dynamodb create-table \
-      --cli-input-json file://"$f" \
-      --endpoint-url=http://localhost:4566 \
-      --region ap-northeast-1 \
-      >/dev/null 2>&1 || echo "⚠️ $filename は既に存在します。スキップ。"
+    # awslocalを使用
+    awslocal dynamodb create-table --cli-input-json "file://$f"
   else
-    echo "⚠️ create_tables/ に JSON ファイルが見つかりません"
+    echo "⚠️ $TABLE_DIR に JSON ファイルが見つかりません"
   fi
 done
 

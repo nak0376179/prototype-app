@@ -11,11 +11,6 @@ const createUser = async (user: { userid: string; username: string; email: strin
   return response.data
 }
 
-const updateUser = async (user: { userid: string; username: string; email: string }) => {
-  const response = await axios.put(`/users/${user.userid}`, user)
-  return response.data
-}
-
 const deleteUser = async (userid: string) => {
   const response = await axios.delete(`/users/${userid}`)
   return response.data

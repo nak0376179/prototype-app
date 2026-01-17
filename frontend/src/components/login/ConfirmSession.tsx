@@ -1,6 +1,6 @@
 import { fetchAuthSession, signOut } from 'aws-amplify/auth'
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router'
+import { useNavigate } from '@tanstack/react-router'
 import { Button, Container, Typography, CircularProgress, Stack } from '@mui/material'
 import { useSetAtom } from 'jotai'
 import { idTokenAtom } from '@/stores/auth'
@@ -25,13 +25,13 @@ export default function ConfirmSession() {
   }, [])
 
   const handleContinue = () => {
-    navigate('/auth/home')
+    navigate({ to: '/users' })
   }
 
   const handleReLogin = async () => {
     await signOut()
     setIdToken(null)
-    navigate('/login')
+    navigate({ to: '/login' })
   }
 
   if (loading) return <CircularProgress />

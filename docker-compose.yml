@@ -12,6 +12,9 @@ services:
       - DOCKER_HOST=unix:///var/run/docker.sock
       # デフォルトリージョンを指定しておくと初期化時に便利
       - AWS_DEFAULT_REGION=ap-northeast-1
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - AWS_DEFAULT_OUTPUT=json
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       # 初期化スクリプト：ready.d はすべてのサービスが準備完了した後に実行されます

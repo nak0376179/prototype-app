@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router'
+import { useNavigate } from '@tanstack/react-router'
 import { useSetAtom } from 'jotai'
 import { fetchAuthSession, signIn } from 'aws-amplify/auth'
 import { idTokenAtom } from '@/stores/auth'
@@ -36,7 +36,7 @@ function Login() {
       const token = session?.tokens?.idToken?.toString() ?? null
       if (token) {
         setIdToken(token)
-        navigate('/auth/users')
+        navigate({ to: '/users' })
       }
     } catch (err) {
       console.error('ログイン失敗:', err)

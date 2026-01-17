@@ -9,7 +9,7 @@ import { Autocomplete } from '@mui/material'
 import { useState } from 'react'
 import { format } from 'date-fns'
 import { ja } from 'date-fns/locale'
-import { useFetchLogsQuery } from '@/hooks/api/logs'
+import { useFetchLogsQuery, type LogItem } from '@/hooks/api/logs'
 import { useFetchGroupUsersQuery } from '@/hooks/api/groups'
 
 export default function LogsPage({ groupid = 'group1' }: { groupid?: string }) {
@@ -124,7 +124,7 @@ export default function LogsPage({ groupid = 'group1' }: { groupid?: string }) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data?.Items?.map((log) => (
+            {data?.Items?.map((log: LogItem) => (
               <TableRow key={log.groupid + log.created_at}>
                 <TableCell>{format(new Date(log.created_at), 'yyyy年MM月dd日 (E) HH:mm:ss', { locale: ja })}</TableCell>
                 <TableCell>{log.username ?? '-'} ({log.userid ?? '-'})</TableCell>
