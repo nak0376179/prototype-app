@@ -1,0 +1,119 @@
+# SNSを事前に設定しておくこと
+
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Cognito with SNS-based PostConfirmation email notification.
+
+Globals:
+  Function:
+    Runtime: python3.12
+    Timeout: 5
+
+Parameters:
+  # 固有値を先頭に集める
+  SNS_TOPIC_ARN:
+    Type: String
+    Description: SNSトピックARN
+    Default: arn:aws:sns:ap-northeast-1:893015465053:demo-user-signup-topic
+  UserPoolName:
+    Type: String
+    Description: ユーザープール名
+    Default: demo-user-pool
+  TopicName:
+    Type: String
+    Description: SNSトピック名
+    Default: demo-user-signup-topic
+
+Resources:
+  DemoUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: !Ref UserPoolName
+      AutoVerifiedAttributes:
+        - email
+      Schema:
+        - Name: email
+          Required: true
+        - Name: given_name
+          Required: true
+        - Name: family_name
+          Required: true
+        - Name: phone_number
+          Required: false
+        - Name: company
+          AttributeDataType: String
+          Mutable: true
+          Required: false
+        - Name: position
+          AttributeDataType: String
+          Mutable: true
+          Required: false
+        - Name: purpose
+          AttributeDataType: String
+          Mutable: true
+          Required: false
+      LambdaConfig:
+        PostConfirmation: !GetAtt PostConfirmationFunction.Arn
+
+  DemoUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      ClientName: demo-user-pool-client
+      UserPoolId: !Ref DemoUserPool
+      GenerateSecret: false
+      ExplicitAuthFlows:
+        - ALLOW_USER_SRP_AUTH
+
+  NotificationTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: !Ref TopicName
+
+  PostConfirmationFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: demo-post-confirmation
+      Handler: index.handler
+      InlineCode: |
+        import boto3
+        import os
+
+        sns_arn = os.environ["SNS_TOPIC_ARN"]
+        sns = boto3.client("sns")
+
+        def handler(event, context):
+            attrs = event["request"]["userAttributes"]
+            email = attrs.get("email")
+            given = attrs.get("given_name", "")
+            family = attrs.get("family_name", "")
+
+            message = f"新しいユーザーが登録されました:\n氏名: {family} {given}\nメール: {email}"
+            try:
+                sns.publish(
+                    TopicArn=sns_arn,
+                    Subject="新規ユーザー登録通知",
+                    Message=message
+                )
+            except Exception as e:
+                print(f"[ERROR] SNS通知失敗: {e}")
+            return event
+      Environment:
+        Variables:
+          SNS_TOPIC_ARN: !Ref SNS_TOPIC_ARN
+      Policies:
+        - SNSPublishMessagePolicy:
+            TopicName: !Ref TopicName
+
+  LambdaInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref PostConfirmationFunction
+      Action: lambda:InvokeFunction
+      Principal: cognito-idp.amazonaws.com
+      SourceArn: !GetAtt DemoUserPool.Arn
+
+Outputs:
+  DemoUserPoolId:
+    Value: !Ref DemoUserPool
+  DemoUserPoolClientId:
+    Value: !Ref DemoUserPoolClient

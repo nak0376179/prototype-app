@@ -1,0 +1,30 @@
+{"groups": {"L": [{"S": "group23"}, {"S": "group13"}]}, "username": {"S": "Eve"}, "email": {"S": "user5@example.com"}, "userid": {"S": "user5@example.com"}}
+{"groups": {"L": [{"S": "group5"}, {"S": "group14"}]}, "username": {"S": "Eve"}, "email": {"S": "user2@example.com"}, "userid": {"S": "user2@example.com"}}
+{"groups": {"L": [{"S": "group13"}, {"S": "group1"}, {"S": "group6"}, {"S": "group22"}, {"S": "group19"}]}, "username": {"S": "Grace"}, "email": {"S": "user7@example.com"}, "userid": {"S": "user7@example.com"}}
+{"groups": {"L": [{"S": "group6"}, {"S": "group25"}, {"S": "group18"}, {"S": "group10"}]}, "username": {"S": "Judy"}, "email": {"S": "user22@example.com"}, "userid": {"S": "user22@example.com"}}
+{"groups": {"L": [{"S": "group29"}, {"S": "group2"}, {"S": "group25"}]}, "username": {"S": "Grace"}, "email": {"S": "user19@example.com"}, "userid": {"S": "user19@example.com"}}
+{"groups": {"L": [{"S": "group4"}, {"S": "group29"}, {"S": "group21"}, {"S": "group23"}, {"S": "group3"}]}, "username": {"S": "Grace"}, "email": {"S": "user9@example.com"}, "userid": {"S": "user9@example.com"}}
+{"groups": {"L": [{"S": "group9"}, {"S": "group6"}, {"S": "group16"}, {"S": "group13"}]}, "username": {"S": "Dave"}, "email": {"S": "user11@example.com"}, "userid": {"S": "user11@example.com"}}
+{"groups": {"L": [{"S": "group28"}, {"S": "group21"}]}, "username": {"S": "Bob"}, "email": {"S": "user21@example.com"}, "userid": {"S": "user21@example.com"}}
+{"groups": {"L": [{"S": "group11"}]}, "username": {"S": "Eve"}, "email": {"S": "user30@example.com"}, "userid": {"S": "user30@example.com"}}
+{"groups": {"L": [{"S": "group6"}, {"S": "group24"}, {"S": "group3"}, {"S": "group22"}]}, "username": {"S": "Charlie"}, "email": {"S": "user27@example.com"}, "userid": {"S": "user27@example.com"}}
+{"groups": {"L": [{"S": "group12"}, {"S": "group22"}, {"S": "group16"}]}, "username": {"S": "Ivan"}, "email": {"S": "user18@example.com"}, "userid": {"S": "user18@example.com"}}
+{"groups": {"L": [{"S": "group28"}, {"S": "group22"}, {"S": "group2"}]}, "username": {"S": "Charlie"}, "email": {"S": "user13@example.com"}, "userid": {"S": "user13@example.com"}}
+{"groups": {"L": [{"S": "group26"}, {"S": "group4"}, {"S": "group15"}, {"S": "group22"}, {"S": "group25"}]}, "username": {"S": "Grace"}, "email": {"S": "user25@example.com"}, "userid": {"S": "user25@example.com"}}
+{"groups": {"L": [{"S": "group7"}, {"S": "group22"}, {"S": "group25"}, {"S": "group30"}]}, "username": {"S": "Charlie"}, "email": {"S": "user24@example.com"}, "userid": {"S": "user24@example.com"}}
+{"groups": {"L": [{"S": "group21"}]}, "username": {"S": "Bob"}, "email": {"S": "user17@example.com"}, "userid": {"S": "user17@example.com"}}
+{"groups": {"L": [{"S": "group26"}, {"S": "group20"}]}, "username": {"S": "Alice"}, "email": {"S": "user8@example.com"}, "userid": {"S": "user8@example.com"}}
+{"groups": {"L": [{"S": "group21"}]}, "username": {"S": "Frank"}, "email": {"S": "user23@example.com"}, "userid": {"S": "user23@example.com"}}
+{"groups": {"L": [{"S": "group6"}, {"S": "group11"}, {"S": "group1"}, {"S": "group28"}]}, "username": {"S": "Judy"}, "email": {"S": "user16@example.com"}, "userid": {"S": "user16@example.com"}}
+{"groups": {"L": [{"S": "group23"}, {"S": "group6"}, {"S": "group27"}, {"S": "group5"}, {"S": "group25"}]}, "username": {"S": "Judy"}, "email": {"S": "user6@example.com"}, "userid": {"S": "user6@example.com"}}
+{"groups": {"L": [{"S": "group3"}]}, "username": {"S": "Charlie"}, "email": {"S": "user14@example.com"}, "userid": {"S": "user14@example.com"}}
+{"groups": {"L": [{"S": "group24"}, {"S": "group14"}, {"S": "group10"}, {"S": "group3"}, {"S": "group11"}]}, "username": {"S": "Eve"}, "email": {"S": "user10@example.com"}, "userid": {"S": "user10@example.com"}}
+{"groups": {"L": [{"S": "group10"}, {"S": "group11"}, {"S": "group29"}, {"S": "group19"}, {"S": "group21"}]}, "username": {"S": "Charlie"}, "email": {"S": "user29@example.com"}, "userid": {"S": "user29@example.com"}}
+{"groups": {"L": [{"S": "group25"}]}, "username": {"S": "Ivan"}, "email": {"S": "user26@example.com"}, "userid": {"S": "user26@example.com"}}
+{"groups": {"L": [{"S": "group2"}, {"S": "group23"}]}, "username": {"S": "Charlie"}, "email": {"S": "user3@example.com"}, "userid": {"S": "user3@example.com"}}
+{"groups": {"L": [{"S": "group25"}]}, "username": {"S": "Eve"}, "email": {"S": "user28@example.com"}, "userid": {"S": "user28@example.com"}}
+{"groups": {"L": [{"S": "group28"}, {"S": "group24"}]}, "username": {"S": "Bob"}, "email": {"S": "user20@example.com"}, "userid": {"S": "user20@example.com"}}
+{"groups": {"L": [{"S": "group28"}, {"S": "group17"}, {"S": "group21"}]}, "username": {"S": "Dave"}, "email": {"S": "user1@example.com"}, "userid": {"S": "user1@example.com"}}
+{"groups": {"L": [{"S": "group20"}, {"S": "group17"}, {"S": "group16"}, {"S": "group8"}]}, "username": {"S": "Grace"}, "email": {"S": "user12@example.com"}, "userid": {"S": "user12@example.com"}}
+{"groups": {"L": [{"S": "group22"}, {"S": "group23"}, {"S": "group10"}]}, "username": {"S": "Grace"}, "email": {"S": "user4@example.com"}, "userid": {"S": "user4@example.com"}}
+{"groups": {"L": [{"S": "group16"}, {"S": "group10"}, {"S": "group24"}, {"S": "group5"}, {"S": "group4"}]}, "username": {"S": "Judy"}, "email": {"S": "user15@example.com"}, "userid": {"S": "user15@example.com"}}

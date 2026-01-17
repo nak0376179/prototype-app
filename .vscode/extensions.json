@@ -1,0 +1,12 @@
+{
+  "recommendations": [
+    "editorconfig.editorconfig",
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "ms-vscode.live-server",
+    "shd101wyy.markdown-preview-enhanced",
+    "vitest.explorer",
+    "ms-python.python",
+    "charliermarsh.ruff"
+  ]
+}

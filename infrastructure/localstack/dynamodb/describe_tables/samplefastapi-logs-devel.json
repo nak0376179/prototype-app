@@ -1,0 +1,112 @@
+{
+  "Table": {
+    "AttributeDefinitions": [
+      {
+        "AttributeName": "created_at",
+        "AttributeType": "S"
+      },
+      {
+        "AttributeName": "groupid",
+        "AttributeType": "S"
+      },
+      {
+        "AttributeName": "groupid#type",
+        "AttributeType": "S"
+      },
+      {
+        "AttributeName": "groupid#userid",
+        "AttributeType": "S"
+      }
+    ],
+    "TableName": "samplefastapi-logs-devel",
+    "KeySchema": [
+      {
+        "AttributeName": "groupid",
+        "KeyType": "HASH"
+      },
+      {
+        "AttributeName": "created_at",
+        "KeyType": "RANGE"
+      }
+    ],
+    "TableStatus": "ACTIVE",
+    "CreationDateTime": "2025-05-04T18:14:56.874000+09:00",
+    "ProvisionedThroughput": {
+      "NumberOfDecreasesToday": 0,
+      "ReadCapacityUnits": 1,
+      "WriteCapacityUnits": 1
+    },
+    "TableSizeBytes": 37960,
+    "ItemCount": 200,
+    "TableArn": "arn:aws:dynamodb:ap-northeast-1:893015465053:table/samplefastapi-logs-devel",
+    "TableId": "4c78249d-5933-4046-b3ed-eade631af440",
+    "GlobalSecondaryIndexes": [
+      {
+        "IndexName": "groupid-userid-created_at-index",
+        "KeySchema": [
+          {
+            "AttributeName": "groupid#userid",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "created_at",
+            "KeyType": "RANGE"
+          }
+        ],
+        "Projection": {
+          "ProjectionType": "ALL"
+        },
+        "IndexStatus": "ACTIVE",
+        "ProvisionedThroughput": {
+          "NumberOfDecreasesToday": 0,
+          "ReadCapacityUnits": 1,
+          "WriteCapacityUnits": 1
+        },
+        "IndexSizeBytes": 37960,
+        "ItemCount": 200,
+        "IndexArn": "arn:aws:dynamodb:ap-northeast-1:893015465053:table/samplefastapi-logs-devel/index/groupid-userid-created_at-index",
+        "WarmThroughput": {
+          "ReadUnitsPerSecond": 1,
+          "WriteUnitsPerSecond": 1,
+          "Status": "ACTIVE"
+        }
+      },
+      {
+        "IndexName": "groupid-type-created_at-index",
+        "KeySchema": [
+          {
+            "AttributeName": "groupid#type",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "created_at",
+            "KeyType": "RANGE"
+          }
+        ],
+        "Projection": {
+          "ProjectionType": "ALL"
+        },
+        "IndexStatus": "ACTIVE",
+        "ProvisionedThroughput": {
+          "NumberOfDecreasesToday": 0,
+          "ReadCapacityUnits": 1,
+          "WriteCapacityUnits": 1
+        },
+        "IndexSizeBytes": 37960,
+        "ItemCount": 200,
+        "IndexArn": "arn:aws:dynamodb:ap-northeast-1:893015465053:table/samplefastapi-logs-devel/index/groupid-type-created_at-index",
+        "WarmThroughput": {
+          "ReadUnitsPerSecond": 1,
+          "WriteUnitsPerSecond": 1,
+          "Status": "ACTIVE"
+        }
+      }
+    ],
+    "DeletionProtectionEnabled": false,
+    "WarmThroughput": {
+      "ReadUnitsPerSecond": 1,
+      "WriteUnitsPerSecond": 1,
+      "Status": "ACTIVE"
+    }
+  }
+}

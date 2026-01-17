@@ -1,0 +1,84 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Sample FastAPI DynamoDB Tables (dev)
+
+Parameters:
+  Stage:
+    Type: String
+    Default: dev
+
+Resources:
+  UsersTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub samplefastapi-users-${Stage}
+      AttributeDefinitions:
+        - AttributeName: userid
+          AttributeType: S
+      KeySchema:
+        - AttributeName: userid
+          KeyType: HASH
+      BillingMode: PROVISIONED
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+
+  GroupsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub samplefastapi-groups-${Stage}
+      AttributeDefinitions:
+        - AttributeName: groupid
+          AttributeType: S
+      KeySchema:
+        - AttributeName: groupid
+          KeyType: HASH
+      BillingMode: PROVISIONED
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+
+  LogsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub samplefastapi-logs-${Stage}
+      AttributeDefinitions:
+        - AttributeName: groupid
+          AttributeType: S
+        - AttributeName: created_at
+          AttributeType: S
+        - AttributeName: groupid#type
+          AttributeType: S
+        - AttributeName: groupid#userid
+          AttributeType: S
+      KeySchema:
+        - AttributeName: groupid
+          KeyType: HASH
+        - AttributeName: created_at
+          KeyType: RANGE
+      BillingMode: PROVISIONED
+      ProvisionedThroughput:
+        ReadCapacityUnits: 1
+        WriteCapacityUnits: 1
+      GlobalSecondaryIndexes:
+        - IndexName: groupid-type-created_at-index
+          KeySchema:
+            - AttributeName: groupid#type
+              KeyType: HASH
+            - AttributeName: created_at
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 1
+            WriteCapacityUnits: 1
+        - IndexName: groupid-userid-created_at-index
+          KeySchema:
+            - AttributeName: groupid#userid
+              KeyType: HASH
+            - AttributeName: created_at
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+          ProvisionedThroughput:
+            ReadCapacityUnits: 1
+            WriteCapacityUnits: 1

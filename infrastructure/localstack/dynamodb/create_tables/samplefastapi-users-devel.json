@@ -1,0 +1,16 @@
+{
+  "TableName": "samplefastapi-users-devel",
+  "AttributeDefinitions": [
+    {
+      "AttributeName": "userid",
+      "AttributeType": "S"
+    }
+  ],
+  "KeySchema": [
+    {
+      "AttributeName": "userid",
+      "KeyType": "HASH"
+    }
+  ],
+  "BillingMode": "PAY_PER_REQUEST"
+}
