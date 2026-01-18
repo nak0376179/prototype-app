@@ -1,10 +1,7 @@
-from unittest.mock import MagicMock
-
-import pytest
-from app.services.log_service import LogsService
+from typing import Any
 
 
-def test_list_logs_by_groupid_excludes_others(logs_service, mock_logs_repo, sample_logs):
+def test_list_logs_by_groupid_excludes_others(logs_service: Any, mock_logs_repo: Any, sample_logs: Any) -> None:
     """
     指定したgroupidに一致するログのみを取得できることを検証する。
 
@@ -30,7 +27,7 @@ def test_list_logs_by_groupid_excludes_others(logs_service, mock_logs_repo, samp
     )
 
 
-def test_list_logs_by_userid(logs_service, mock_logs_repo, sample_logs):
+def test_list_logs_by_userid(logs_service: Any, mock_logs_repo: Any, sample_logs: Any) -> None:
     """
     useridでフィルタリングされたログが返されることを確認する。
     """
@@ -42,7 +39,7 @@ def test_list_logs_by_userid(logs_service, mock_logs_repo, sample_logs):
     assert all(item["userid"] == target_user for item in result["Items"])
 
 
-def test_list_logs_by_type(logs_service, mock_logs_repo, sample_logs):
+def test_list_logs_by_type(logs_service: Any, mock_logs_repo: Any, sample_logs: Any) -> None:
     """
     typeでフィルタリングされたログが返されることを確認する。
     """
@@ -54,7 +51,7 @@ def test_list_logs_by_type(logs_service, mock_logs_repo, sample_logs):
     assert all(item["type"] == target_type for item in result["Items"])
 
 
-def test_list_logs_with_time_range(logs_service, mock_logs_repo, sample_logs):
+def test_list_logs_with_time_range(logs_service: Any, mock_logs_repo: Any, sample_logs: Any) -> None:
     """
     指定した期間内のログのみが返されることを確認する。
     """
@@ -67,7 +64,7 @@ def test_list_logs_with_time_range(logs_service, mock_logs_repo, sample_logs):
     assert all(begin <= item["created_at"] <= end for item in result["Items"])
 
 
-def test_list_logs_with_limit_100(logs_service, mock_logs_repo, sample_logs):
+def test_list_logs_with_limit_100(logs_service: Any, mock_logs_repo: Any, sample_logs: Any) -> None:
     """
     100件のデータがあった場合、limit=100を指定してすべてのログが取得されることを確認する。
     """
@@ -78,7 +75,7 @@ def test_list_logs_with_limit_100(logs_service, mock_logs_repo, sample_logs):
     assert all(item["groupid"] == "group-A" for item in result["Items"])
 
 
-def test_list_logs_with_pagination(logs_service, mock_logs_repo, sample_logs):
+def test_list_logs_with_pagination(logs_service: Any, mock_logs_repo: Any, sample_logs: Any) -> None:
     """
     ページネーションが有効で、startkey によって次のページが取得されることを確認する。
     """
@@ -97,7 +94,7 @@ def test_list_logs_with_pagination(logs_service, mock_logs_repo, sample_logs):
     assert len(result2["Items"]) == 25
 
 
-def test_list_logs_with_pagination_has_next(logs_service, mock_logs_repo, sample_logs):
+def test_list_logs_with_pagination_has_next(logs_service: Any, mock_logs_repo: Any, sample_logs: Any) -> None:
     """
     次のページが存在する場合、LastEvaluatedKeyが返されることを確認する。
     """
@@ -110,7 +107,7 @@ def test_list_logs_with_pagination_has_next(logs_service, mock_logs_repo, sample
     assert len(result1["Items"]) == 25
 
 
-def test_list_logs_with_limit_more_than_total(logs_service, mock_logs_repo, sample_logs):
+def test_list_logs_with_limit_more_than_total(logs_service: Any, mock_logs_repo: Any, sample_logs: Any) -> None:
     """
     limitが総件数より大きい場合、全件が返されることを確認する。
     """

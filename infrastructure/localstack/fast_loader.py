@@ -19,26 +19,26 @@ JSONL ファイルから指定された DynamoDB テーブルへ一括でデー�
 """
 
 import json
-import boto3
 import sys
 from itertools import islice
+from typing import Any
+
+import boto3
 
 # 引数からテーブル名とファイルパスを取得
 TABLE_NAME = sys.argv[1]
 FILE_PATH = sys.argv[2]
 
 # LocalStack 用の DynamoDB クライアントを作成
-dynamodb = boto3.client(
-    "dynamodb", endpoint_url="http://localhost:4566", region_name="ap-northeast-1"
-)
+dynamodb = boto3.client("dynamodb", endpoint_url="http://localhost:4566", region_name="ap-northeast-1")
 
 
-def batch_write_requests(file_path):
+def batch_write_requests(file_path: str) -> Any:
     """
     指定された JSONL ファイルを 25 件ずつ読み取り、DynamoDB の
     batch_write_item に渡せる形式のリクエストを生成するジェネレータ。
     """
-    with open(file_path, "r", encoding="utf-8") as f:
+    with open(file_path, encoding="utf-8") as f:
         while True:
             batch = list(islice(f, 25))  # 最大25行ずつ取得
             if not batch:

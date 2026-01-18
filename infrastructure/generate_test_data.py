@@ -1,7 +1,8 @@
+import argparse
 import json
 import random
-import argparse
 from datetime import datetime, timedelta
+from typing import Any
 
 # 定数
 NUM_GROUPS = 10
@@ -12,12 +13,8 @@ USER_PREFIX = "user"
 
 # CLI引数の処理
 parser = argparse.ArgumentParser()
-parser.add_argument(
-    "--appname", required=True, help="アプリケーション名 (例: samplefastapi)"
-)
-parser.add_argument(
-    "--env", required=True, choices=["devel", "staging", "prod"], help="環境名"
-)
+parser.add_argument("--appname", required=True, help="アプリケーション名 (例: samplefastapi)")
+parser.add_argument("--env", required=True, choices=["devel", "staging", "prod"], help="環境名")
 args = parser.parse_args()
 appname = args.appname
 env = args.env
@@ -41,9 +38,9 @@ user_names = [
 group_to_users: dict[str, list[dict[str, str]]] = {gid: [] for gid in group_ids}
 user_to_groups: dict[str, list[str]] = {}
 
-users: list[dict[str, dict[str, str | list]]] = []
-groups: list[dict[str, dict[str, str | list]]] = []
-logs: list[dict[str, dict[str, str | list]]] = []
+users: list[dict[str, Any]] = []
+groups: list[dict[str, Any]] = []
+logs: list[dict[str, Any]] = []
 
 for email in user_emails:
     name = random.choice(user_names)
@@ -67,18 +64,12 @@ for email in user_emails:
         }
     )
 
-    group_roles = ", ".join(
-        f"{g['groupid']['S']}({g['role']['S']})"
-        for g in [item["M"] for item in groups_list]
-    )
+    group_roles = ", ".join(f"{g['groupid']['S']}({g['role']['S']})" for g in [item["M"] for item in groups_list])
     print(f"✅ ユーザーを追加しました: {name} ({email}) 所属グループ: {group_roles}")
 
 # グループを生成
 for gid in group_ids:
-    users_list = [
-        {"M": {"userid": {"S": u["email"]}, "role": {"S": u["role"]}}}
-        for u in group_to_users[gid]
-    ]
+    users_list = [{"M": {"userid": {"S": u["email"]}, "role": {"S": u["role"]}}} for u in group_to_users[gid]]
 
     groups.append(
         {
@@ -102,9 +93,7 @@ for _ in range(NUM_LOGS):
     else:
         user_email = random.choice(user_emails)
 
-    user_name = next(
-        u["username"]["S"] for u in users if u["userid"]["S"] == user_email
-    )
+    user_name = next(u["username"]["S"] for u in users if u["userid"]["S"] == user_email)
 
     log_type = random.choice(log_types)
     timestamp = start_time + timedelta(minutes=random.randint(0, 1440))
@@ -130,7 +119,7 @@ for _ in range(NUM_LOGS):
 
 
 # ファイル出力関数
-def write_jsonl(table_name, items):
+def write_jsonl(table_name: str, items: list[dict[str, Any]]) -> None:
     filename = f"{appname}-{table_name}-{env}.jsonl"
     with open(filename, "w", encoding="utf-8") as f:
         for item in items:

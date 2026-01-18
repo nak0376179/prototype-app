@@ -3,10 +3,12 @@
 import logging
 import os
 import time
+from typing import Any
 
-from app.api import groups, logs, root, users
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
+
+from app.api import groups, logs, root, users
 
 logging.basicConfig(level=logging.INFO, format="%(name)s: %(message)s")
 
@@ -35,7 +37,7 @@ app.add_middleware(
 
 
 @app.middleware("http")
-async def log_access_middleware(request: Request, call_next):
+async def log_access_middleware(request: Request, call_next: Any) -> Any:
     # pytest中ならログをスキップ
     if "PYTEST_CURRENT_TEST" in os.environ:
         return await call_next(request)

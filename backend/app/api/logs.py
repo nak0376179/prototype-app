@@ -3,13 +3,13 @@
 import json
 import logging
 
+from fastapi import APIRouter, Depends, HTTPException, Path, Query, Request
+
 from app.api.utils.auth import AuthContext
 from app.api.utils.authorization import authorize_group_access
-from app.api.utils.responses import CustomErrorResponses
-from app.models.logs import LogsResponse
+from app.schemas.logs import ErrorResponse, LogItem, LogsResponse
 from app.services.log_service import LogsService
 from app.utils.access_log import log_start
-from fastapi import APIRouter, Depends, HTTPException, Path, Query, Request
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -19,7 +19,17 @@ def get_auth_context(request: Request) -> AuthContext:
     return AuthContext(request)
 
 
-@router.get("/groups/{groupid}/logs", response_model=LogsResponse, responses=CustomErrorResponses)
+@router.get(
+    "/groups/{groupid}/logs",
+    response_model=LogsResponse,
+    responses={
+        400: {"model": ErrorResponse, "description": "Bad Request"},
+        401: {"model": ErrorResponse, "description": "Unauthorized"},
+        403: {"model": ErrorResponse, "description": "Forbidden"},
+        404: {"model": ErrorResponse, "description": "Resource not found"},
+        500: {"model": ErrorResponse, "description": "Internal server error"},
+    },
+)
 async def list_logs(
     request: Request,
     groupid: str = Path(..., description="グループID（パーティションキー）"),
@@ -30,23 +40,27 @@ async def list_logs(
     userid: str | None = Query(None, description="ユーザーIDでフィルタ"),
     type_: str | None = Query(None, alias="type", description="タイプでフィルタ"),
     auth: AuthContext = Depends(get_auth_context),
-):
+) -> LogsResponse:
     await log_start(request)
     authorize_group_access(auth, groupid, required_permission="list_logs")
     try:
         logs_service = LogsService()
-        startkey = json.loads(startkey) if startkey else None
-        result = logs_service.list_logs(
+        startkey_dict = json.loads(startkey) if startkey else None
+        res = logs_service.list_logs(
             groupid=groupid,
             userid=userid,
             limit=limit,
-            startkey=startkey,
+            startkey=startkey_dict,
             begin=begin,
             end=end,
             type_=type_,
         )
-        logger.info(f"Logs retrieved successfully for groupid={groupid} (count={len(result['Items'])})")
-        return result
+        if res.data is None:
+            logger.warning(f"No logs found for groupid={groupid}")
+            return LogsResponse(Items=[], LastEvaluatedKey=None)
+        logs = [LogItem.model_validate(item) for item in res.data.items if item is not None]
+        logger.info(f"Logs retrieved successfully for groupid={groupid} (count={res.data.count})")
+        return LogsResponse(Items=logs, LastEvaluatedKey=res.data.last_evaluated_key)
 
     except json.JSONDecodeError:
         raise HTTPException(status_code=400, detail="Invalid startkey format")

@@ -10,9 +10,10 @@ LocalStack や他環境で再構築できるように、以下の2種類の JSON
 - `aws configure` によって認証情報とリージョンが設定されていること
 """
 
-import os
 import json
+import os
 import subprocess
+from typing import Any
 
 AWS_REGION = "ap-northeast-1"
 
@@ -26,7 +27,7 @@ os.makedirs(DESCRIBE_DIR, exist_ok=True)
 os.makedirs(CREATE_DIR, exist_ok=True)
 
 
-def filter_provisioned_throughput(pt):
+def filter_provisioned_throughput(pt: Any) -> dict[str, int]:
     """
     ProvisionedThroughput フィールドから不要なデータを除き、最低限の構造で返す。
 
@@ -101,9 +102,7 @@ for table_name in tables:
                 "IndexName": gsi["IndexName"],
                 "KeySchema": gsi["KeySchema"],
                 "Projection": gsi["Projection"],
-                "ProvisionedThroughput": filter_provisioned_throughput(
-                    gsi.get("ProvisionedThroughput", {})
-                ),
+                "ProvisionedThroughput": filter_provisioned_throughput(gsi.get("ProvisionedThroughput", {})),
             }
             for gsi in table_def["GlobalSecondaryIndexes"]
         ]

@@ -1,4 +1,10 @@
+from typing import Any
+
 from pydantic import BaseModel
+
+
+class ErrorResponse(BaseModel):
+    detail: str
 
 
 class LogItem(BaseModel):
@@ -12,4 +18,4 @@ class LogItem(BaseModel):
 
 class LogsResponse(BaseModel):
     Items: list[LogItem]
-    LastEvaluatedKey: dict | None = None
+    LastEvaluatedKey: dict[str, Any] | None = None

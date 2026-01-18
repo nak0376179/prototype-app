@@ -3,12 +3,14 @@
 from typing import Any
 
 import boto3
-from app.repositories.dynamodb import query_items  # ← 共通の query_items を使う前提
-from boto3.dynamodb.conditions import Key
+from boto3.dynamodb.conditions import ConditionBase, Key
+
+from app.models.common import ListItemData, RepositoryResponse
+from app.repositories.dynamodb import query_items
 
 
 class LogsTable:
-    def __init__(self, dynamodb=None):
+    def __init__(self, dynamodb: Any = None) -> None:
         self.dynamodb = dynamodb or boto3.resource("dynamodb")
         self.table_name = "logs"
 
@@ -21,8 +23,10 @@ class LogsTable:
         end: str | None = None,
         userid: str | None = None,
         type_: str | None = None,
-    ) -> dict[str, Any]:
+    ) -> RepositoryResponse[ListItemData]:
         # GSI 切り替えと KeyConditionExpression の構築
+        key_condition: ConditionBase
+        index_name: str | None
         if userid:
             key_condition = Key("groupid#userid").eq(f"{groupid}#{userid}")
             index_name = "groupid-userid-created_at-index"
@@ -34,23 +38,17 @@ class LogsTable:
             index_name = None  # ベーステーブルを使用
 
         if begin and end:
-            key_condition &= Key("created_at").between(begin, end)
+            key_condition = key_condition & Key("created_at").between(begin, end)
         elif begin:
-            key_condition &= Key("created_at").gte(begin)
+            key_condition = key_condition & Key("created_at").gte(begin)
         elif end:
-            key_condition &= Key("created_at").lte(end)
+            key_condition = key_condition & Key("created_at").lte(end)
 
         # 実クエリ
-        result = query_items(
+        return query_items(
             table_name=self.table_name,
             key_condition_expr=key_condition,
             index_name=index_name,
             exclusive_start_key=startkey,
             limit=limit,
         )
-
-        # 結果整形（25件に制限、LastEvaluatedKey の付加）
-        response: dict[str, Any] = {"Items": result["Items"][:limit]}
-        if result.get("LastEvaluatedKey"):
-            response["LastEvaluatedKey"] = result["LastEvaluatedKey"]
-        return response

@@ -17,7 +17,8 @@ def parse_jwt_username(token: str) -> str:
         padding = "=" * (-len(payload) % 4)
         decoded = base64.urlsafe_b64decode(payload + padding)
         claims = json.loads(decoded)
-        return claims.get("cognito:username", "unknown")
+        # username が無い場合は sub (ID) を返し、それも無ければ "unknown"
+        return claims.get("cognito:username") or claims.get("sub") or "unknown"
     except Exception as e:
         logger.warning(f"[JWT Decode Error] {repr(e)}")
         return "unknown"
@@ -27,8 +28,10 @@ async def log_start(request: Request) -> dict[str, Any]:
     path = request.url.path
     query = dict(request.query_params)
     method = request.method
-    client_ip = request.client.host
     headers = dict(request.headers)
+
+    # request.client が None でないことを確認
+    client_ip = request.client.host if request.client else "unknown"
 
     auth_header = headers.get("authorization", "")
     token = ""

@@ -1,3 +1,4 @@
+from typing import Any
 from unittest.mock import MagicMock
 
 import pytest
@@ -13,7 +14,7 @@ from app.services.log_service import LogsService
 
 
 @pytest.fixture
-def mock_group_repo():
+def mock_group_repo() -> Any:
     """
     GroupService に注入するためのモックグループリポジトリ。
     `FakeGroupsRepo` を使って、特定のグループIDに対して静的なレスポンスを返す。
@@ -22,7 +23,7 @@ def mock_group_repo():
 
 
 @pytest.fixture
-def mock_user_repo():
+def mock_user_repo() -> Any:
     """
     GroupService に注入するためのモックユーザーリポジトリ。
     `FakeUsersRepo` により、与えられたユーザーIDに対応するダミーユーザー情報を返す。
@@ -31,7 +32,7 @@ def mock_user_repo():
 
 
 @pytest.fixture
-def mock_logs_repo(sample_logs):
+def mock_logs_repo(sample_logs: Any) -> Any:
     """
     LogsService に注入するためのモックログリポジトリ。
     list_logs メソッドのみを提供し、group-A のログを固定で返す。
@@ -42,7 +43,7 @@ def mock_logs_repo(sample_logs):
 
 
 @pytest.fixture
-def group_service(mock_group_repo, mock_user_repo):
+def group_service(mock_group_repo: Any, mock_user_repo: Any) -> Any:
     """
     GroupService のインスタンスを、モックリポジトリを注入した状態で生成する。
     このフィクスチャにより、サービスのユニットテストで外部依存を排除できる。
@@ -54,7 +55,7 @@ def group_service(mock_group_repo, mock_user_repo):
 
 
 @pytest.fixture
-def logs_service(mock_logs_repo):
+def logs_service(mock_logs_repo: Any) -> Any:
     """
     LogsService のインスタンスを、モックリポジトリ付きで提供する。
     """
@@ -70,7 +71,7 @@ class FakeGroupsRepo:
     GroupService のテスト用。
     """
 
-    def get_group_by_id(self, groupid):
+    def get_group_by_id(self, groupid: str) -> Any:
         if groupid == "test-group1":
             return {
                 "groupid": "test-group1",
@@ -93,7 +94,7 @@ class FakeUsersRepo:
     与えられたIDのローカル部分を username として返す。
     """
 
-    def batch_get_users_by_ids(self, userids):
+    def batch_get_users_by_ids(self, userids: list[str]) -> list[dict[str, Any]]:
         return [{"userid": user, "username": user.split("@")[0]} for user in userids]
 
 
@@ -101,7 +102,7 @@ class FakeUsersRepo:
 
 
 @pytest.fixture
-def sample_logs():
+def sample_logs() -> Any:
     """
     LogsService のテスト用に使用されるダミーログデータを生成。
     2つの異なるグループ（group-A, group-B）に対してそれぞれ100件ずつのログを含む。
@@ -114,7 +115,7 @@ def sample_logs():
         }
     """
 
-    def make_group_logs(groupid):
+    def make_group_logs(groupid: str) -> list[dict[str, Any]]:
         return [
             {
                 "groupid": groupid,

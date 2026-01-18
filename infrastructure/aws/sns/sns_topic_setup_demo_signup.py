@@ -1,34 +1,32 @@
-import boto3
 import argparse
+from typing import Any
+
+import boto3
 
 # SNS クライアントを作成
 sns_client = boto3.client("sns", region_name="ap-northeast-1")
 
 
 # SNS トピックを作成する関数
-def create_sns_topic(app_name, environment):
+def create_sns_topic(app_name: str, environment: str) -> str:
     topic_name = f"{app_name}-demo-signup-topic-{environment}"
     response = sns_client.create_topic(Name=topic_name)
-    topic_arn = response["TopicArn"]
+    topic_arn: str = response["TopicArn"]
     print(f"Topic ARN: {topic_arn}")
     return topic_arn
 
 
 # 購読者を SNS トピックに追加する関数
-def subscribe_to_topic(topic_arn, email_address):
-    subscription_response = sns_client.subscribe(
-        TopicArn=topic_arn, Protocol="email", Endpoint=email_address
-    )
+def subscribe_to_topic(topic_arn: str, email_address: str) -> None:
+    subscription_response = sns_client.subscribe(TopicArn=topic_arn, Protocol="email", Endpoint=email_address)
     print(f"Subscription ARN: {subscription_response['SubscriptionArn']}")
     print("購読確認メールが送信されました。確認して購読を有効化してください。")
 
 
 # 購読確認状態をチェックする関数
-def check_subscription_status(subscription_arn):
+def check_subscription_status(subscription_arn: str) -> bool:
     try:
-        response = sns_client.get_subscription_attributes(
-            SubscriptionArn=subscription_arn
-        )
+        response = sns_client.get_subscription_attributes(SubscriptionArn=subscription_arn)
         subscription_status = response["Attributes"]["ConfirmationStatus"]
 
         if subscription_status == "Confirmed":
@@ -43,10 +41,8 @@ def check_subscription_status(subscription_arn):
 
 
 # 引数を解析する関数
-def parse_args():
-    parser = argparse.ArgumentParser(
-        description="SNSトピックを作成し、購読者を追加します。"
-    )
+def parse_args() -> Any:
+    parser = argparse.ArgumentParser(description="SNSトピックを作成し、購読者を追加します。")
     parser.add_argument("app_name", help="アプリ名")
     parser.add_argument("environment", help="環境 (例: dev, prod)")
     parser.add_argument("email", help="購読者のメールアドレス")
@@ -54,7 +50,7 @@ def parse_args():
 
 
 # メイン処理
-def main():
+def main() -> None:
     # 引数を解析
     args = parse_args()
 
@@ -68,9 +64,7 @@ def main():
     # 購読確認を手動で行ってもらう
     print("購読確認を手動で行ってください。確認したら 'y' を押してください。")
     while True:
-        user_input = (
-            input("購読確認が完了したら 'y' を押してください: ").strip().lower()
-        )
+        user_input = input("購読確認が完了したら 'y' を押してください: ").strip().lower()
         if user_input == "y":
             break
         else:

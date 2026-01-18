@@ -1,5 +1,7 @@
 # tests/integration/conftest.py
 
+from typing import Any
+
 import boto3
 import pytest
 from app.config import settings
@@ -8,7 +10,7 @@ from fastapi.testclient import TestClient
 
 
 @pytest.fixture(scope="session")
-def dynamodb_resource():
+def dynamodb_resource() -> Any:
     return boto3.resource(
         "dynamodb",
         endpoint_url=settings.DYNAMODB_ENDPOINT,
@@ -19,5 +21,5 @@ def dynamodb_resource():
 
 
 @pytest.fixture(scope="session")
-def client():
+def client() -> TestClient:
     return TestClient(app)

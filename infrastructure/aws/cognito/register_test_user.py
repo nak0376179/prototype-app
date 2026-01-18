@@ -1,8 +1,9 @@
-import boto3
 import argparse
 
+import boto3
 
-def create_user(pool_id, email, password, name, phone):
+
+def create_user(pool_id: str, email: str, password: str, name: str, phone: str) -> None:
     client = boto3.client("cognito-idp")
 
     client.admin_create_user(
@@ -17,9 +18,7 @@ def create_user(pool_id, email, password, name, phone):
         MessageAction="SUPPRESS",
     )
 
-    client.admin_set_user_password(
-        UserPoolId=pool_id, Username=email, Password=password, Permanent=True
-    )
+    client.admin_set_user_password(UserPoolId=pool_id, Username=email, Password=password, Permanent=True)
 
     print("✅ User created:", email)
 

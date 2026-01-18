@@ -3,15 +3,17 @@
 import base64
 import json
 import logging
+from typing import Any
 
-from app.repositories.groups import GroupsTable
-from app.repositories.users import UsersTable
 from fastapi import HTTPException, Request
+
+from app.repositories.group_repo import GroupsTable
+from app.repositories.user_repo import UsersTable
 
 logger = logging.getLogger(__name__)
 
 
-def parse_jwt_payload(token: str) -> dict:
+def parse_jwt_payload(token: str) -> Any:
     try:
         payload = token.split(".")[1]
         padding = "=" * (-len(payload) % 4)  # Base64URLパディング調整
@@ -25,10 +27,10 @@ class AuthContext:
     def __init__(
         self,
         request: Request,
-        groups_repo: GroupsTable = None,
-        users_repo: UsersTable = None,
+        groups_repo: GroupsTable | None = None,
+        users_repo: UsersTable | None = None,
     ):
-        self.groups_repo = groups_repo or UsersTable()
+        self.groups_repo = groups_repo or GroupsTable()
         self.users_repo = users_repo or UsersTable()
         auth_header = request.headers.get("Authorization")
         if not auth_header or not auth_header.startswith("Bearer "):

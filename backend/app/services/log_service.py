@@ -2,11 +2,12 @@
 
 from typing import Any
 
-from app.repositories.logs import LogsTable
+from app.models.common import ListItemData, ServiceResponse
+from app.repositories.log_repo import LogsTable
 
 
 class LogsService:
-    def __init__(self, logs_repo: LogsTable = None):
+    def __init__(self, logs_repo: LogsTable | None = None):
         self.logs_repo = logs_repo or LogsTable()
 
     def list_logs(
@@ -18,8 +19,8 @@ class LogsService:
         end: str | None = None,
         userid: str | None = None,
         type_: str | None = None,
-    ) -> dict[str, Any]:
-        return self.logs_repo.list_logs(
+    ) -> ServiceResponse[ListItemData]:
+        res = self.logs_repo.list_logs(
             groupid=groupid,
             limit=limit,
             startkey=startkey,
@@ -28,3 +29,4 @@ class LogsService:
             userid=userid,
             type_=type_,
         )
+        return ServiceResponse(code=res.code, data=res.data, detail=res.detail)
