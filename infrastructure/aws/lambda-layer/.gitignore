@@ -1,0 +1,5 @@
+# Build artifacts
+layer/
+
+# SAM build directory
+.aws-sam/

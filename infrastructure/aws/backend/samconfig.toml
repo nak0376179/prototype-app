@@ -1,0 +1,83 @@
+# SAM CLI configuration for Backend API deployment
+# Usage: sam deploy --config-env <environment>
+# Example: sam deploy --config-env devel
+
+version = 0.1
+
+[default.global.parameters]
+stack_name = "prototype-app-backend-stack-devel"
+
+[default.build.parameters]
+cached = true
+parallel = true
+
+[default.validate.parameters]
+lint = true
+
+[default.deploy.parameters]
+capabilities = "CAPABILITY_NAMED_IAM"
+confirm_changeset = true
+resolve_s3 = true
+
+[default.sync.parameters]
+watch = true
+
+[default.local_start_api.parameters]
+warm_containers = "EAGER"
+
+# =============================================================================
+# Development Environment
+# =============================================================================
+[devel]
+[devel.global.parameters]
+stack_name = "prototype-app-backend-stack-devel"
+
+[devel.build.parameters]
+cached = true
+parallel = true
+use_container = true
+
+[devel.deploy.parameters]
+capabilities = "CAPABILITY_NAMED_IAM"
+confirm_changeset = false
+resolve_s3 = true
+s3_prefix = "prototype-app-backend-devel"
+parameter_overrides = "ProjectName=prototype-app Env=devel CognitoUserPoolId=ap-northeast-1_mEDAZ9b89"
+
+# =============================================================================
+# Staging Environment
+# =============================================================================
+[staging]
+[staging.global.parameters]
+stack_name = "prototype-app-backend-stack-staging"
+
+[staging.build.parameters]
+cached = true
+parallel = true
+use_container = true
+
+[staging.deploy.parameters]
+capabilities = "CAPABILITY_NAMED_IAM"
+confirm_changeset = true
+resolve_s3 = true
+s3_prefix = "prototype-app-backend-staging"
+parameter_overrides = "ProjectName=prototype-app Env=staging CognitoUserPoolId=STAGING_USER_POOL_ID"
+
+# =============================================================================
+# Production Environment
+# =============================================================================
+[prod]
+[prod.global.parameters]
+stack_name = "prototype-app-backend-stack-prod"
+
+[prod.build.parameters]
+cached = true
+parallel = true
+use_container = true
+
+[prod.deploy.parameters]
+capabilities = "CAPABILITY_NAMED_IAM"
+confirm_changeset = true
+resolve_s3 = true
+s3_prefix = "prototype-app-backend-prod"
+parameter_overrides = "ProjectName=prototype-app Env=prod CognitoUserPoolId=PROD_USER_POOL_ID"

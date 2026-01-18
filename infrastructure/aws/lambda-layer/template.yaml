@@ -1,0 +1,52 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Python dependencies Lambda Layer for prototype-app
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: prototype-app
+    Description: Project name for resource naming
+
+  Env:
+    Type: String
+    AllowedValues:
+      - devel
+      - staging
+      - prod
+    Default: devel
+    Description: Deployment environment
+
+  PythonVersion:
+    Type: String
+    Default: python3.13
+    AllowedValues:
+      - python3.11
+      - python3.12
+      - python3.13
+    Description: Python runtime version for the layer
+
+Resources:
+  DependenciesLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: !Sub ${ProjectName}-dependencies-${Env}
+      Description: !Sub Python dependencies layer for ${ProjectName} (${Env})
+      ContentUri: ./layer
+      CompatibleRuntimes:
+        - !Ref PythonVersion
+      CompatibleArchitectures:
+        - x86_64
+        - arm64
+      RetentionPolicy: Retain
+
+Outputs:
+  LayerArn:
+    Description: ARN of the deployed Lambda Layer
+    Value: !Ref DependenciesLayer
+    Export:
+      Name: !Sub ${ProjectName}-layer-${Env}
+
+  LayerVersionArn:
+    Description: Version ARN of the deployed Lambda Layer
+    Value: !Ref DependenciesLayer

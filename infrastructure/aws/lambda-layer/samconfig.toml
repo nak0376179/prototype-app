@@ -1,0 +1,71 @@
+# SAM CLI configuration for Lambda Layer deployment
+# Usage: sam deploy --config-env <environment>
+# Example: sam deploy --config-env devel
+
+version = 0.1
+
+[default.global.parameters]
+stack_name = "prototype-app-lambda-layer-stack-devel"
+
+[default.build.parameters]
+cached = true
+parallel = true
+
+[default.deploy.parameters]
+capabilities = "CAPABILITY_IAM"
+confirm_changeset = true
+resolve_s3 = true
+
+[default.sync.parameters]
+watch = true
+
+# =============================================================================
+# Development Environment
+# =============================================================================
+[devel]
+[devel.global.parameters]
+stack_name = "prototype-app-lambda-layer-stack-devel"
+
+[devel.build.parameters]
+cached = true
+parallel = true
+
+[devel.deploy.parameters]
+capabilities = "CAPABILITY_IAM"
+confirm_changeset = false
+resolve_s3 = true
+parameter_overrides = "ProjectName=prototype-app Env=devel PythonVersion=python3.13"
+
+# =============================================================================
+# Staging Environment
+# =============================================================================
+[staging]
+[staging.global.parameters]
+stack_name = "prototype-app-lambda-layer-stack-staging"
+
+[staging.build.parameters]
+cached = true
+parallel = true
+
+[staging.deploy.parameters]
+capabilities = "CAPABILITY_IAM"
+confirm_changeset = true
+resolve_s3 = true
+parameter_overrides = "ProjectName=prototype-app Env=staging PythonVersion=python3.13"
+
+# =============================================================================
+# Production Environment
+# =============================================================================
+[prod]
+[prod.global.parameters]
+stack_name = "prototype-app-lambda-layer-stack-prod"
+
+[prod.build.parameters]
+cached = true
+parallel = true
+
+[prod.deploy.parameters]
+capabilities = "CAPABILITY_IAM"
+confirm_changeset = false
+resolve_s3 = true
+parameter_overrides = "ProjectName=prototype-app Env=prod PythonVersion=python3.13"

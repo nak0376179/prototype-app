@@ -1,0 +1,298 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: prototype-app Backend API on AWS Lambda
+
+Globals:
+  Function:
+    Timeout: 60
+    Runtime: python3.13
+    Architectures:
+      - x86_64
+  Api:
+    OpenApiVersion: 3.0.2
+
+Parameters:
+  ProjectName:
+    Type: String
+    Default: prototype-app
+    Description: Project name for resource naming
+
+  Env:
+    Type: String
+    Default: devel
+    AllowedValues:
+      - devel
+      - staging
+      - prod
+    Description: Deployment environment
+
+  DependenciesLayerArn:
+    Type: String
+    Default: ""
+    Description: ARN of the dependencies Lambda Layer (optional, uses exported value if empty)
+
+  CognitoUserPoolId:
+    Type: String
+    Description: Cognito User Pool ID for API authorization
+
+Conditions:
+  UseExportedLayer: !Equals [!Ref DependenciesLayerArn, ""]
+
+Resources:
+  # =============================================================================
+  # API Gateway
+  # =============================================================================
+  ApiGateway:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: !Sub ${ProjectName}-api-${Env}
+      StageName: v1
+      Auth:
+        DefaultAuthorizer: CognitoAuthorizer
+        AddDefaultAuthorizerToCorsPreflight: false
+        Authorizers:
+          CognitoAuthorizer:
+            Type: CognitoUserPool
+            UserPoolArn: !Sub arn:aws:cognito-idp:${AWS::Region}:${AWS::AccountId}:userpool/${CognitoUserPoolId}
+            Identity:
+              Header: Authorization
+
+  # =============================================================================
+  # IAM Role
+  # =============================================================================
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub ${ProjectName}-lambda-role-${Env}
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: !Sub ${ProjectName}-lambda-policy-${Env}
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:GetItem
+                  - dynamodb:BatchGetItem
+                  - dynamodb:Query
+                  - dynamodb:Scan
+                  - dynamodb:PutItem
+                  - dynamodb:BatchWriteItem
+                  - dynamodb:DeleteItem
+                  - dynamodb:UpdateItem
+                Resource:
+                  - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/samplefastapi-users-${Env}
+                  - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/samplefastapi-groups-${Env}
+                  - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/samplefastapi-logs-${Env}
+                  - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/samplefastapi-*/index/*
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:DeleteObject
+                Resource:
+                  - !Sub arn:aws:s3:::${ProjectName}-*-${Env}/*
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: "*"
+
+  # =============================================================================
+  # Lambda Functions
+  # =============================================================================
+  PublicFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${ProjectName}-public-${Env}
+      CodeUri: ../../../backend/
+      Handler: lambda_handler.handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Layers:
+        - !If
+          - UseExportedLayer
+          - !ImportValue
+              Fn::Sub: ${ProjectName}-layer-${Env}
+          - !Ref DependenciesLayerArn
+      Environment:
+        Variables:
+          ENVIRONMENT: !Ref Env
+      Events:
+        PublicRoot:
+          Type: Api
+          Properties:
+            Path: /
+            Method: GET
+            RestApiId: !Ref ApiGateway
+            Auth:
+              Authorizer: NONE
+
+  PublicFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${ProjectName}-public-${Env}
+      RetentionInDays: 14
+
+  SecureFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub ${ProjectName}-secure-${Env}
+      CodeUri: ../../../backend/
+      Handler: lambda_handler.handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Layers:
+        - !If
+          - UseExportedLayer
+          - !ImportValue
+              Fn::Sub: ${ProjectName}-layer-${Env}
+          - !Ref DependenciesLayerArn
+      Environment:
+        Variables:
+          ENVIRONMENT: !Ref Env
+      Events:
+        # Users endpoints
+        Users:
+          Type: Api
+          Properties:
+            Path: /users
+            Method: ANY
+            RestApiId: !Ref ApiGateway
+        UsersOptions:
+          Type: Api
+          Properties:
+            Path: /users
+            Method: OPTIONS
+            RestApiId: !Ref ApiGateway
+            Auth:
+              Authorizer: NONE
+        User:
+          Type: Api
+          Properties:
+            Path: /users/{userid}
+            Method: ANY
+            RestApiId: !Ref ApiGateway
+        UserOptions:
+          Type: Api
+          Properties:
+            Path: /users/{userid}
+            Method: OPTIONS
+            RestApiId: !Ref ApiGateway
+            Auth:
+              Authorizer: NONE
+
+        # Groups endpoints
+        Groups:
+          Type: Api
+          Properties:
+            Path: /groups
+            Method: ANY
+            RestApiId: !Ref ApiGateway
+        GroupsOptions:
+          Type: Api
+          Properties:
+            Path: /groups
+            Method: OPTIONS
+            RestApiId: !Ref ApiGateway
+            Auth:
+              Authorizer: NONE
+        Group:
+          Type: Api
+          Properties:
+            Path: /groups/{groupid}
+            Method: ANY
+            RestApiId: !Ref ApiGateway
+        GroupOptions:
+          Type: Api
+          Properties:
+            Path: /groups/{groupid}
+            Method: OPTIONS
+            RestApiId: !Ref ApiGateway
+            Auth:
+              Authorizer: NONE
+
+        # Group users endpoints
+        GroupUsers:
+          Type: Api
+          Properties:
+            Path: /groups/{groupid}/users
+            Method: ANY
+            RestApiId: !Ref ApiGateway
+        GroupUsersOptions:
+          Type: Api
+          Properties:
+            Path: /groups/{groupid}/users
+            Method: OPTIONS
+            RestApiId: !Ref ApiGateway
+            Auth:
+              Authorizer: NONE
+        GroupUser:
+          Type: Api
+          Properties:
+            Path: /groups/{groupid}/users/{userid}
+            Method: ANY
+            RestApiId: !Ref ApiGateway
+        GroupUserOptions:
+          Type: Api
+          Properties:
+            Path: /groups/{groupid}/users/{userid}
+            Method: OPTIONS
+            RestApiId: !Ref ApiGateway
+            Auth:
+              Authorizer: NONE
+
+        # Group logs endpoints
+        GroupLogs:
+          Type: Api
+          Properties:
+            Path: /groups/{groupid}/logs
+            Method: ANY
+            RestApiId: !Ref ApiGateway
+        GroupLogsOptions:
+          Type: Api
+          Properties:
+            Path: /groups/{groupid}/logs
+            Method: OPTIONS
+            RestApiId: !Ref ApiGateway
+            Auth:
+              Authorizer: NONE
+
+  SecureFunctionLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${ProjectName}-secure-${Env}
+      RetentionInDays: 14
+
+# =============================================================================
+# Outputs
+# =============================================================================
+Outputs:
+  ApiUrl:
+    Description: API Gateway endpoint URL
+    Value: !Sub https://${ApiGateway}.execute-api.${AWS::Region}.amazonaws.com/v1
+    Export:
+      Name: !Sub ${ProjectName}-api-url-${Env}
+
+  ApiGatewayId:
+    Description: API Gateway ID
+    Value: !Ref ApiGateway
+    Export:
+      Name: !Sub ${ProjectName}-api-id-${Env}
+
+  PublicFunctionArn:
+    Description: Public Lambda Function ARN
+    Value: !GetAtt PublicFunction.Arn
+
+  SecureFunctionArn:
+    Description: Secure Lambda Function ARN
+    Value: !GetAtt SecureFunction.Arn
+
+  LambdaExecutionRoleArn:
+    Description: Lambda Execution Role ARN
+    Value: !GetAtt LambdaExecutionRole.Arn

@@ -1,4 +1,4 @@
-# python3 tools/get_logs.py --groupid group1 | jq .
+# uv run --directory backend python -m tools.get_logs --groupid group1 | jq .
 
 import argparse
 import json
@@ -11,10 +11,13 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(na
 logger = logging.getLogger(__name__)
 
 
-def main(groupid):
+def main(groupid: str) -> None:
     service = LogsService()
     result = service.list_logs(groupid=groupid)
-    print(json.dumps(result, indent=2))
+    if result.data is None:
+        logger.error(f"No logs found for groupid={groupid}")
+        return
+    print(json.dumps(result.data.items, indent=2))
 
 
 if __name__ == "__main__":

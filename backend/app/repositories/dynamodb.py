@@ -24,10 +24,11 @@ from datetime import UTC, datetime
 from typing import Any
 
 import boto3
-from app.config import settings
-from app.models.common import ListItemData, MessageData, RepositoryResponse, SingleItemData
 from boto3.dynamodb.types import TypeDeserializer, TypeSerializer
 from botocore.exceptions import ClientError
+
+from app.config import settings
+from app.models.common import ListItemData, MessageData, RepositoryResponse, SingleItemData
 
 logger = logging.getLogger(__name__)
 serializer = TypeSerializer()
@@ -47,15 +48,20 @@ MAX_RESPONSE_SIZE = 5 * 1024 * 1024  # 5MBを超えないように応答を返�
 
 
 def get_full_table_name(table_name: str) -> str:
-    stage = "devel" if settings.ENV == "local" else settings.ENV
+    # local/test 環境では devel テーブルを使用
+    if settings.ENV in ("local", "test"):
+        stage = "devel"
+    else:
+        stage = settings.ENV
     return f"{settings.APP_NAME}-{table_name}-{stage}"
 
 
 def get_table(table_name: str) -> Any:
-    if settings.ENV == "local":
+    endpoint_url = settings.dynamodb_endpoint_url
+    if endpoint_url:
         resource = boto3.resource(
             "dynamodb",
-            endpoint_url=settings.DYNAMODB_ENDPOINT,
+            endpoint_url=endpoint_url,
             region_name=settings.REGION_NAME,
         )
     else:
@@ -87,17 +93,16 @@ def iso8601_z_to_datetime(iso_str: str) -> datetime:
 
 
 def get_dynamodb_resource() -> Any:
-    """DynamoDBリソースを取得する。ローカル環境ではエンドポイントを明示。"""
-    if settings.ENV == "local":
-        logger.debug("[get_dynamodb_resource] ENV=local")
+    """DynamoDBリソースを取得する。ローカル/テスト環境ではエンドポイントを明示。"""
+    endpoint_url = settings.dynamodb_endpoint_url
+    if endpoint_url:
+        logger.debug(f"[get_dynamodb_resource] Using endpoint: {endpoint_url}")
         return boto3.resource(
             "dynamodb",
-            endpoint_url=settings.DYNAMODB_ENDPOINT,
+            endpoint_url=endpoint_url,
             region_name=settings.REGION_NAME,
-            # aws_access_key_id="dummy",
-            # aws_secret_access_key="dummy",
         )
-    logger.debug("f[get_dynamodb_resource] ENV={settings.ENV}")
+    logger.debug(f"[get_dynamodb_resource] ENV={settings.ENV}")
     return boto3.resource("dynamodb", region_name=settings.REGION_NAME)
 
 
@@ -205,7 +210,11 @@ def batch_get_items(table_name: str, keys: list[dict[str, Any]]) -> RepositoryRe
         items = batch_get_items("users", [{"userid": "user1@example.com"}, {"userid": "user2@example.com"}])
     """
     full_table_name = get_full_table_name(table_name)
-    dynamodb = boto3.resource("dynamodb", region_name=settings.REGION_NAME)  # 簡易化
+    endpoint_url = settings.dynamodb_endpoint_url
+    if endpoint_url:
+        dynamodb = boto3.resource("dynamodb", endpoint_url=endpoint_url, region_name=settings.REGION_NAME)
+    else:
+        dynamodb = boto3.resource("dynamodb", region_name=settings.REGION_NAME)
     client = dynamodb.meta.client
     results = []
     total_size = 0

@@ -1,4 +1,4 @@
-# python3 tools/get_users.py | jq .
+# uv run --directory backend python -m tools.get_users | jq .
 
 import json
 import logging
@@ -10,9 +10,13 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(na
 logger = logging.getLogger(__name__)
 
 
-def main():
+def main() -> None:
     result = UsersService().list_users()
-    print(json.dumps(result, indent=2))
+    if result.data is None:
+        logger.error("No data returned from list_users")
+        return
+    data = result.data.items
+    print(json.dumps(data, indent=2))
 
 
 if __name__ == "__main__":
