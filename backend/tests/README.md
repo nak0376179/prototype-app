@@ -233,7 +233,7 @@ ResourceNotFoundException: Requested resource not found
 ### テストがスキップされる
 
 ```
-SKIPPED: Table samplefastapi-users-devel does not exist
+SKIPPED: Table prototype-app-users-devel does not exist
 ```
 
 **解決策:** LocalStack のテーブルを作成してください。

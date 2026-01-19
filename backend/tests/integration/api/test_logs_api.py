@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 DYNAMODB_ENDPOINT = "http://localhost:4566"
-TABLE_NAME = "samplefastapi-logs-devel"
+TABLE_NAME = "prototype-app-logs-devel"
 
 
 class MockAuthContext:

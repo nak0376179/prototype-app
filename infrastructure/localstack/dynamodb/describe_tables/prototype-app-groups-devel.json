@@ -6,7 +6,7 @@
         "AttributeType": "S"
       }
     ],
-    "TableName": "samplefastapi-groups-devel",
+    "TableName": "prototype-app-groups-devel",
     "KeySchema": [
       {
         "AttributeName": "groupid",

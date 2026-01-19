@@ -10,7 +10,7 @@ Resources:
   UsersTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: !Sub samplefastapi-users-${Stage}
+      TableName: !Sub prototype-app-users-${Stage}
       AttributeDefinitions:
         - AttributeName: userid
           AttributeType: S
@@ -25,7 +25,7 @@ Resources:
   GroupsTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: !Sub samplefastapi-groups-${Stage}
+      TableName: !Sub prototype-app-groups-${Stage}
       AttributeDefinitions:
         - AttributeName: groupid
           AttributeType: S
@@ -40,7 +40,7 @@ Resources:
   LogsTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: !Sub samplefastapi-logs-${Stage}
+      TableName: !Sub prototype-app-logs-${Stage}
       AttributeDefinitions:
         - AttributeName: groupid
           AttributeType: S

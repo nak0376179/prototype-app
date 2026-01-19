@@ -1,8 +1,8 @@
 """
 AWSに設定するので注意
-python3 fast_loader_aws.py samplefastapi-groups-devel ../../localstack/data/groups.jsonl
-python3 fast_loader_aws.py samplefastapi-users-devel ../../localstack/data/users.jsonl
-python3 fast_loader_aws.py samplefastapi-logs-devel ../../localstack/data/logs.jsonl
+python3 fast_loader_aws.py prototype-app-groups-devel ../../localstack/data/groups.jsonl
+python3 fast_loader_aws.py prototype-app-users-devel ../../localstack/data/users.jsonl
+python3 fast_loader_aws.py prototype-app-logs-devel ../../localstack/data/logs.jsonl
 """
 
 import json

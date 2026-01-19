@@ -1,5 +1,5 @@
 {
-  "TableName": "samplefastapi-logs-devel",
+  "TableName": "prototype-app-logs-devel",
   "AttributeDefinitions": [
     {
       "AttributeName": "created_at",

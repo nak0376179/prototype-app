@@ -1,14 +1,14 @@
 {
-  "TableName": "samplefastapi-users-devel",
+  "TableName": "prototype-app-groups-devel",
   "AttributeDefinitions": [
     {
-      "AttributeName": "userid",
+      "AttributeName": "groupid",
       "AttributeType": "S"
     }
   ],
   "KeySchema": [
     {
-      "AttributeName": "userid",
+      "AttributeName": "groupid",
       "KeyType": "HASH"
     }
   ],

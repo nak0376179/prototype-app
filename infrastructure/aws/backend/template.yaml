@@ -87,10 +87,10 @@ Resources:
                   - dynamodb:DeleteItem
                   - dynamodb:UpdateItem
                 Resource:
-                  - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/samplefastapi-users-${Env}
-                  - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/samplefastapi-groups-${Env}
-                  - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/samplefastapi-logs-${Env}
-                  - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/samplefastapi-*/index/*
+                  - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/prototype-app-users-${Env}
+                  - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/prototype-app-groups-${Env}
+                  - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/prototype-app-logs-${Env}
+                  - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/prototype-app-*/index/*
               - Effect: Allow
                 Action:
                   - s3:GetObject

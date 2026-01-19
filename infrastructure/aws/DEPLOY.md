@@ -258,15 +258,51 @@ sam build --config-env devel && sam deploy --config-env devel
 
 ### Cognito User Pool ID
 
-`infrastructure/aws/backend/samconfig.toml` で環境ごとに設定:
+Backend スタックでは Cognito User Pool による認証を使用します。デプロイ前に実際の User Pool ID を設定してください。
+
+#### 設定方法
+
+`infrastructure/aws/backend/samconfig.toml` にはプレースホルダーが設定されています：
 
 ```toml
 [devel.deploy.parameters]
-parameter_overrides = "... CognitoUserPoolId=ap-northeast-1_xxxxxxxxx"
+parameter_overrides = "ProjectName=prototype-app Env=devel CognitoUserPoolId=DEVEL_USER_POOL_ID"
 
 [staging.deploy.parameters]
-parameter_overrides = "... CognitoUserPoolId=ap-northeast-1_yyyyyyyyy"
+parameter_overrides = "ProjectName=prototype-app Env=staging CognitoUserPoolId=STAGING_USER_POOL_ID"
 
 [prod.deploy.parameters]
-parameter_overrides = "... CognitoUserPoolId=ap-northeast-1_zzzzzzzzz"
+parameter_overrides = "ProjectName=prototype-app Env=prod CognitoUserPoolId=PROD_USER_POOL_ID"
+```
+
+#### オプション 1: samconfig.toml を直接編集（推奨）
+
+`samconfig.toml` を編集して、プレースホルダーを実際の User Pool ID に置き換えます。
+
+```toml
+[devel.deploy.parameters]
+parameter_overrides = "ProjectName=prototype-app Env=devel CognitoUserPoolId=ap-northeast-1_xxxxxxxxx"
+```
+
+#### オプション 2: デプロイ時にパラメータで上書き
+
+`samconfig.toml` は変更せず、デプロイ時にコマンドラインで指定します。
+
+```bash
+cd infrastructure/aws/backend
+
+sam deploy --config-env devel \
+  --parameter-overrides "ProjectName=prototype-app Env=devel CognitoUserPoolId=ap-northeast-1_xxxxxxxxx"
+```
+
+#### Cognito User Pool ID の確認方法
+
+```bash
+# Cognito User Pool の一覧を表示
+aws cognito-idp list-user-pools --max-results 10 --region ap-northeast-1
+
+# 特定の User Pool の詳細を確認
+aws cognito-idp describe-user-pool \
+  --user-pool-id ap-northeast-1_xxxxxxxxx \
+  --region ap-northeast-1
 ```

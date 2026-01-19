@@ -42,7 +42,7 @@ capabilities = "CAPABILITY_NAMED_IAM"
 confirm_changeset = false
 resolve_s3 = true
 s3_prefix = "prototype-app-backend-devel"
-parameter_overrides = "ProjectName=prototype-app Env=devel CognitoUserPoolId=ap-northeast-1_mEDAZ9b89"
+parameter_overrides = "ProjectName=prototype-app Env=devel CognitoUserPoolId=ap-northeast-1_cweb1dtCm"
 
 # =============================================================================
 # Staging Environment
@@ -61,7 +61,7 @@ capabilities = "CAPABILITY_NAMED_IAM"
 confirm_changeset = true
 resolve_s3 = true
 s3_prefix = "prototype-app-backend-staging"
-parameter_overrides = "ProjectName=prototype-app Env=staging CognitoUserPoolId=STAGING_USER_POOL_ID"
+parameter_overrides = "ProjectName=prototype-app Env=staging CognitoUserPoolId="
 
 # =============================================================================
 # Production Environment
@@ -80,4 +80,4 @@ capabilities = "CAPABILITY_NAMED_IAM"
 confirm_changeset = true
 resolve_s3 = true
 s3_prefix = "prototype-app-backend-prod"
-parameter_overrides = "ProjectName=prototype-app Env=prod CognitoUserPoolId=PROD_USER_POOL_ID"
+parameter_overrides = "ProjectName=prototype-app Env=prod CognitoUserPoolId="

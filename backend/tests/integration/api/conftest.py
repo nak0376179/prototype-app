@@ -10,9 +10,9 @@ DYNAMODB_ENDPOINT = "http://localhost:4566"
 REGION = "ap-northeast-1"
 
 # 使用する DynamoDB テーブル名（環境名などの prefix を含む）
-TABLE_LOGS = "samplefastapi-logs-devel"
-TABLE_USERS = "samplefastapi-users-devel"
-TABLE_GROUPS = "samplefastapi-groups-devel"
+TABLE_LOGS = "prototype-app-logs-devel"
+TABLE_USERS = "prototype-app-users-devel"
+TABLE_GROUPS = "prototype-app-groups-devel"
 
 # ロガーの初期設定
 logging.basicConfig(level=logging.INFO)

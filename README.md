@@ -50,7 +50,7 @@ $ tree -I 'node_modules|.venv|__pycache__|volume|scripts|memo'
 ├── Makefile
 ├── pyproject.toml
 ├── samconfig.toml
-├── samplefastapi-app.code-workspace
+├── prototype-app.code-workspace
 ├── start-dev.sh
 └── template.yaml
 ```

@@ -1,3 +1,9 @@
+# --- 環境変数ファイル ---
+.env
+!.env.example
+frontend/.env
+!frontend/.env.sample
+
 # --- Node.jsビルド成果物 ---
 frontend/node_modules
 frontend/dist

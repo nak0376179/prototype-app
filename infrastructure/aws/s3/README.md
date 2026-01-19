@@ -1,4 +1,4 @@
-# samplefastapi-dynamodb-stack
+# prototype-app-dynamodb-stack
 
 このスタックは、FastAPI アプリケーションで使用する以下の DynamoDB テーブルを AWS SAM を使って構築するためのものです。  
 すべてのテーブルは **プロビジョンドモード（RCU/WCU = 1）** で作成されます。
@@ -7,21 +7,21 @@
 
 ## 📦 作成される DynamoDB テーブル
 
-### 👤 `samplefastapi-users-{Stage}`
+### 👤 `prototype-app-users-{Stage}`
 
 - **主キー**: `userid (HASH)`
 - **用途**: ユーザー情報の保存
 
 ---
 
-### 👥 `samplefastapi-groups-{Stage}`
+### 👥 `prototype-app-groups-{Stage}`
 
 - **主キー**: `groupid (HASH)`
 - **用途**: グループ情報の保存
 
 ---
 
-### 📝 `samplefastapi-logs-{Stage}`
+### 📝 `prototype-app-logs-{Stage}`
 
 - **主キー**:
 
@@ -46,7 +46,7 @@
 
 ```bash
 sam deploy \
-  --stack-name samplefastapi-dynamodb-stack-dev \
+  --stack-name prototype-app-dynamodb-stack-dev \
   --parameter-overrides Stage=dev \
   --capabilities CAPABILITY_IAM
 ```

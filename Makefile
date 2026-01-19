@@ -9,6 +9,7 @@ REGION = ap-northeast-1
         generate-test-data init-dynamodb \
         sam-build sam-deploy sam-start-api \
         show-env show-layer show-backend show-cognito show-dynamodb \
+        sync-env \
         help
 
 # ----------------------------------------
@@ -75,7 +76,7 @@ rebuild-localstack: ## 🏗️ イメージを最新にしてから再構築（l
 
 # 確認方法
 # docker exec -it localstack_main awslocal dynamodb list-tables
-# docker exec -it localstack_main awslocal dynamodb scan --table-name samplefastapi-users-devel
+# docker exec -it localstack_main awslocal dynamodb scan --table-name prototype-app-users-devel
 
 # ----------------------------------------
 # SAM操作（Lambdaビルド・デプロイ・ローカルAPI起動）
@@ -102,86 +103,30 @@ test-backend-v: ## ✅ backend のユニットテストを実行（pytest）
 	PYTHONPATH=./backend . backend/.venv/bin/activate && pytest backend/tests -s -v
 
 # ----------------------------------------
+# 環境変数管理
+# ----------------------------------------
+
+sync-env: ## 🔄 環境変数をfrontend/backendに同期 (ENV=devel|staging|prod)
+	@python3 scripts/sync-env.py --env $(ENV)
+
+# ----------------------------------------
 # 環境確認
 # ----------------------------------------
 
 show-env: ## 📊 デプロイ済みAWS環境の全体像を表示
-	@echo "================================================================"
-	@echo "📊  AWS Environment Status (ENV=$(ENV), REGION=$(REGION))"
-	@echo "================================================================"
-	@echo ""
-	@echo "🔧 Lambda Layer Stack: prototype-app-lambda-layer-stack-$(ENV)"
-	@echo "----------------------------------------------------------------"
-	@aws cloudformation describe-stacks \
-		--stack-name prototype-app-lambda-layer-stack-$(ENV) \
-		--region $(REGION) \
-		--query 'Stacks[0].{Status:StackStatus,Outputs:Outputs}' \
-		--output json 2>/dev/null | jq -r \
-		'if .Outputs then "  Status: \(.Status)\n" + (.Outputs[] | "  \(.OutputKey): \(.OutputValue)") else "  ⚠️  Stack not found" end' \
-		|| echo "  ⚠️  Stack not deployed yet"
-	@echo ""
-	@echo "🚀 Backend Stack: prototype-app-backend-stack-$(ENV)"
-	@echo "----------------------------------------------------------------"
-	@aws cloudformation describe-stacks \
-		--stack-name prototype-app-backend-stack-$(ENV) \
-		--region $(REGION) \
-		--query 'Stacks[0].{Status:StackStatus,Parameters:Parameters,Outputs:Outputs}' \
-		--output json 2>/dev/null | jq -r \
-		'if .Outputs then "  Status: \(.Status)\n  Parameters:\n" + (.Parameters[] | "    \(.ParameterKey): \(.ParameterValue)") + "\n  Outputs:\n" + (.Outputs[] | "    \(.OutputKey): \(.OutputValue)") else "  ⚠️  Stack not found" end' \
-		|| echo "  ⚠️  Stack not deployed yet"
-	@echo ""
-	@echo "🗄️  DynamoDB Tables"
-	@echo "----------------------------------------------------------------"
-	@for table in samplefastapi-users-$(ENV) samplefastapi-groups-$(ENV) samplefastapi-logs-$(ENV); do \
-		status=$$(aws dynamodb describe-table --table-name $$table --region $(REGION) --query 'Table.TableStatus' --output text 2>/dev/null || echo "NOT_FOUND"); \
-		if [ "$$status" = "NOT_FOUND" ]; then \
-			echo "  ⚠️  $$table: Not found"; \
-		else \
-			count=$$(aws dynamodb scan --table-name $$table --region $(REGION) --select COUNT --query 'Count' --output text 2>/dev/null); \
-			echo "  ✓  $$table: $$status ($$count items)"; \
-		fi; \
-	done
-	@echo ""
-	@echo "================================================================"
+	@python3 scripts/show-env.py --env $(ENV) --region $(REGION)
 
 show-layer: ## 📦 Lambda Layer情報を表示
-	@aws cloudformation describe-stacks \
-		--stack-name prototype-app-lambda-layer-stack-$(ENV) \
-		--region $(REGION) \
-		--query 'Stacks[0].Outputs' \
-		--output table 2>/dev/null || echo "⚠️  Stack not found"
+	@python3 scripts/show-env.py --env $(ENV) --region $(REGION) --component layer
 
 show-backend: ## 🚀 Backend API情報を表示
-	@aws cloudformation describe-stacks \
-		--stack-name prototype-app-backend-stack-$(ENV) \
-		--region $(REGION) \
-		--query 'Stacks[0].{Parameters:Parameters,Outputs:Outputs}' \
-		--output json 2>/dev/null | jq . || echo "⚠️  Stack not found"
+	@python3 scripts/show-env.py --env $(ENV) --region $(REGION) --component backend
 
 show-cognito: ## 🔐 Cognito User Pool情報を表示
-	@echo "Cognito User Pool for ENV=$(ENV):"
-	@aws cloudformation describe-stacks \
-		--stack-name prototype-app-backend-stack-$(ENV) \
-		--region $(REGION) \
-		--query 'Stacks[0].Parameters[?ParameterKey==`CognitoUserPoolId`].ParameterValue' \
-		--output text 2>/dev/null | \
-		xargs -I {} aws cognito-idp describe-user-pool \
-		--user-pool-id {} \
-		--region $(REGION) \
-		--query 'UserPool.{Id:Id,Name:Name,Status:Status,CreationDate:CreationDate}' \
-		--output table 2>/dev/null || echo "⚠️  Cognito User Pool not found"
+	@python3 scripts/show-env.py --env $(ENV) --region $(REGION) --component cognito
 
 show-dynamodb: ## 🗄️ DynamoDB Tables情報を表示
-	@echo "DynamoDB Tables for ENV=$(ENV):"
-	@for table in samplefastapi-users-$(ENV) samplefastapi-groups-$(ENV) samplefastapi-logs-$(ENV); do \
-		echo ""; \
-		echo "Table: $$table"; \
-		aws dynamodb describe-table \
-			--table-name $$table \
-			--region $(REGION) \
-			--query 'Table.{TableName:TableName,Status:TableStatus,ItemCount:ItemCount,TableSizeBytes:TableSizeBytes}' \
-			--output table 2>/dev/null || echo "  ⚠️  Not found"; \
-	done
+	@python3 scripts/show-env.py --env $(ENV) --region $(REGION) --component dynamodb
 
 # ----------------------------------------
 # Utility

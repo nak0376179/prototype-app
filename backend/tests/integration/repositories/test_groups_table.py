@@ -7,7 +7,7 @@ import pytest
 from app.repositories.group_repo import GroupsTable
 
 DYNAMODB_ENDPOINT = "http://localhost:4566"
-GROUPS_TABLE_NAME = "samplefastapi-groups-devel"
+GROUPS_TABLE_NAME = "prototype-app-groups-devel"
 
 
 @pytest.fixture(scope="module")

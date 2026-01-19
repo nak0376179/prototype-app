@@ -13,7 +13,7 @@ USER_PREFIX = "user"
 
 # CLI引数の処理
 parser = argparse.ArgumentParser()
-parser.add_argument("--appname", required=True, help="アプリケーション名 (例: samplefastapi)")
+parser.add_argument("--appname", required=True, help="アプリケーション名 (例: prototype-app)")
 parser.add_argument("--env", required=True, choices=["devel", "staging", "prod"], help="環境名")
 args = parser.parse_args()
 appname = args.appname
